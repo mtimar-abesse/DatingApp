@@ -1,23 +1,20 @@
-using API.Data;
-using Microsoft.EntityFrameworkCore;
+using API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddApplicationServices(builder.Configuration); //kattints bele
+builder.Services.AddIdentityServices(builder.Configuration); //kattints bele
 
-//ehhez majd dependency injectiont fogunk használni, buildelés során ez meghívja a db konstruktorát
-builder.Services.AddDbContext<DataContext>(opt =>
-{
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-builder.Services.AddCors();
 
 var app = builder.Build();
 
 //Configure the HTTP request pipeline.
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200" ));
 //EZ middleware-nek számít, a lényege a CORS hiba kijavítása, security cucc
+
+//SORREND!!!!
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
